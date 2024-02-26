@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <fstream>
 #include <string>
 
@@ -10,11 +11,16 @@ typedef vector<vector<int>> matrix;
 matrix fillRandomMatrix(int);
 void printMatrix(matrix&);
 matrix readMatrix(string, int);
+void findSource(matrix&);
 
 
 void main() 
 {
-	matrix matrix = fillRandomMatrix(16);
+	vector<int> testWeights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
+	matrix matrix = readMatrix("test.txt", testWeights.size());
+	printMatrix(matrix);
+	cout << endl;
+	findSource(matrix);
 	printMatrix(matrix);
 }
 
@@ -71,4 +77,49 @@ matrix readMatrix(string fileName, int size) {
 	fin.close();
 
 	return matrix;
+}
+
+// Function for searching for source vertices and and adding a common node
+void findSource(matrix& matrix) 
+{
+	int sourceCount = 0;
+	vector<int> nodes;
+
+	for (int j = 0; j < matrix.size(); j++)
+	{
+		bool flag = false;
+		for (int i = 0; i < matrix.size(); i++)
+		{
+			if (matrix[i][j] != 0)
+			{
+				flag = true;
+			}
+		}
+		if (!flag)
+		{
+			sourceCount++;
+			nodes.push_back(j);
+		}
+	}
+
+	if (sourceCount > 1)
+	{
+		for (int i = 0; i < matrix.size(); i++)
+		{
+			matrix[i].insert(matrix[i].begin(), 0);
+		}
+
+		vector<int> row;
+		for (int i = 0; i < matrix.size() + 1; i++)
+		{
+			row.push_back(0);
+		}
+		matrix.push_back(row);
+
+		for (int i = 0; i < nodes.size(); i++)
+		{
+			matrix[i + 1][0] = 1;
+		}
+	}
+	
 }
