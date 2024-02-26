@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <algorithm>
 #include <fstream>
 #include <string>
 
@@ -16,6 +16,8 @@ vector<int> findDrain(matrix&);
 void extendMatrix(matrix&, vector<int>&, vector<int>&);
 bool dfs(matrix&, vector<int>, int);
 bool findCycle(matrix&);
+void topologicalSorting(matrix&, int, vector<int>&, vector<int>&);
+void changeOrderNodes(matrix&, vector<int>&);
 
 
 void main() 
@@ -37,6 +39,12 @@ void main()
 	extendMatrix(matrix, sourceNodes, drainNodes);
 	cout << endl;
 	printMatrix(matrix);
+	
+
+	changeOrderNodes(matrix, testWeights);
+	cout << endl;
+	printMatrix(matrix);
+
 }
 
 
@@ -222,4 +230,55 @@ bool findCycle(matrix& matrix)
 	}
 
 	return dfs(matrix, visited, 0);
+}
+
+// Functions for sorting nodes
+void topologicalSorting(matrix& matrix, int node, vector<int>& visited, vector<int>& resultOrder)
+{
+	visited[node] = 1;
+	for (int i = 0; i < visited.size(); i++)
+	{
+		if (matrix[node][i] == 1 && visited[i] == 0)
+		{
+			topologicalSorting(matrix, i, visited, resultOrder);
+		}
+	}
+	resultOrder.push_back(node);
+}
+
+void changeOrderNodes(matrix& matrix, vector<int>& weights)
+{
+	vector<int> visited(matrix.size(), 0);
+	vector<int> resultOrder;
+	topologicalSorting(matrix, 0, visited, resultOrder);
+	
+	reverse(resultOrder.begin(), resultOrder.end());
+
+	/*
+	cout << "New order ";
+	for (int i = 0; i < resultOrder.size(); i++)
+	{
+		cout << i << " ";
+	}
+	*/
+
+	weights.insert(weights.begin(), 0);
+	weights.push_back(0);
+
+	vector<vector<int>> copyMatrix(matrix.size(), vector<int>(matrix[0].size(), 0));
+	vector<int> copyWeights(weights.size(), 0);
+
+	for (int i = 0; i < resultOrder.size(); i++)
+	{
+		int rowIndex = resultOrder[i];
+		copyWeights[i] = weights[resultOrder[i]];
+		for (int j = 0; j < resultOrder.size(); j++)
+		{
+			int columnIndex = resultOrder[j];
+			copyMatrix[i][j] = matrix[rowIndex][columnIndex];
+		}
+	}
+
+	matrix = copyMatrix;
+	weights = copyWeights;
 }
