@@ -13,7 +13,7 @@ void printMatrix(matrix&);
 matrix readMatrix(string, int);
 vector<int> findSource(matrix&);
 vector<int> findDrain(matrix&);
-void extendMatrix(matrix&);
+void extendMatrix(matrix&, vector<int>&, vector<int>&);
 
 
 void main() 
@@ -21,10 +21,11 @@ void main()
 	vector<int> testWeights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
 	matrix matrix = readMatrix("test.txt", testWeights.size());
 	printMatrix(matrix);
-	cout << endl;
+
 	vector<int> sourceNodes = findSource(matrix);
-	cout << endl;
 	vector<int> drainNodes = findDrain(matrix);
+
+	extendMatrix(matrix, sourceNodes, drainNodes);
 	cout << endl;
 	printMatrix(matrix);
 }
@@ -84,7 +85,7 @@ matrix readMatrix(string fileName, int size) {
 	return matrix;
 }
 
-// Function for searching for source nodes and and adding a common node
+// Function for searching for source nodes
 vector<int> findSource(matrix& matrix) 
 {
 	int sourceCount = 0;
@@ -108,30 +109,9 @@ vector<int> findSource(matrix& matrix)
 	}
 
 	return nodes;
-	/*
-	if (sourceCount > 1)
-	{
-		for (int i = 0; i < matrix.size(); i++)
-		{
-			matrix[i].insert(matrix[i].begin(), 0);
-		}
-
-		vector<int> row;
-		for (int i = 0; i < matrix.size() + 1; i++)
-		{
-			row.push_back(0);
-		}
-		matrix.push_back(row);
-
-		for (int i = 0; i < nodes.size(); i++)
-		{
-			matrix[i + 1][0] = 1;
-		}
-	}
-	*/
 }
 
-// Function for searching for drain nodes and and adding a common node
+// Function for searching for drain nodes
 vector<int> findDrain(matrix& matrix) {
 	int drainCount = 0;
 	vector<int> nodes;
@@ -153,10 +133,49 @@ vector<int> findDrain(matrix& matrix) {
 		}
 	}
 
-	for (int i = 0; i < nodes.size(); i++)
-	{
-		cout << nodes[i] << " ";
-	}
-
 	return nodes;
+}
+
+// Function for extendig matrix
+void extendMatrix(matrix& matrix, vector<int>& rows, vector<int>& columns)
+{
+	if (!rows.empty())
+	{
+		for (int i = 0; i < matrix.size(); i++)
+		{
+			matrix[i].insert(matrix[i].begin(), 0);
+		}
+
+		vector<int> row;
+		for (int i = 0; i < matrix.size() + 1; i++)
+		{
+			row.push_back(0);
+		}
+		matrix.insert(matrix.begin(), row);
+
+		for (int i = 0; i < rows.size(); i++)
+		{
+			matrix[0][rows[i] + 1] = 1;
+		}
+	}
+	
+	if (!columns.empty())
+	{
+		for (int i = 0; i < matrix.size(); i++)
+		{
+			matrix[i].push_back(0);
+		}
+
+		vector<int> row;
+		for (int i = 0; i < matrix.size() + 1; i++)
+		{
+			row.push_back(0);
+		}
+		matrix.push_back(row);
+
+		for (int i = 0; i < columns.size(); i++)
+		{
+			matrix[columns[i] + 1][matrix[0].size() - 1] = 1;
+		}
+	}
 }
