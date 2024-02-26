@@ -11,7 +11,9 @@ typedef vector<vector<int>> matrix;
 matrix fillRandomMatrix(int);
 void printMatrix(matrix&);
 matrix readMatrix(string, int);
-void findSource(matrix&);
+vector<int> findSource(matrix&);
+vector<int> findDrain(matrix&);
+void extendMatrix(matrix&);
 
 
 void main() 
@@ -20,7 +22,10 @@ void main()
 	matrix matrix = readMatrix("test.txt", testWeights.size());
 	printMatrix(matrix);
 	cout << endl;
-	findSource(matrix);
+	vector<int> sourceNodes = findSource(matrix);
+	cout << endl;
+	vector<int> drainNodes = findDrain(matrix);
+	cout << endl;
 	printMatrix(matrix);
 }
 
@@ -79,8 +84,8 @@ matrix readMatrix(string fileName, int size) {
 	return matrix;
 }
 
-// Function for searching for source vertices and and adding a common node
-void findSource(matrix& matrix) 
+// Function for searching for source nodes and and adding a common node
+vector<int> findSource(matrix& matrix) 
 {
 	int sourceCount = 0;
 	vector<int> nodes;
@@ -102,6 +107,8 @@ void findSource(matrix& matrix)
 		}
 	}
 
+	return nodes;
+	/*
 	if (sourceCount > 1)
 	{
 		for (int i = 0; i < matrix.size(); i++)
@@ -121,5 +128,35 @@ void findSource(matrix& matrix)
 			matrix[i + 1][0] = 1;
 		}
 	}
-	
+	*/
+}
+
+// Function for searching for drain nodes and and adding a common node
+vector<int> findDrain(matrix& matrix) {
+	int drainCount = 0;
+	vector<int> nodes;
+
+	for (int i = 0; i < matrix.size(); i++)
+	{
+		bool flag = false;
+		for (int j = 0; j < matrix[i].size(); j++)
+		{
+			if (matrix[i][j] != 0)
+			{
+				flag = true;
+			}
+		}
+		if (!flag)
+		{
+			drainCount++;
+			nodes.push_back(i);
+		}
+	}
+
+	for (int i = 0; i < nodes.size(); i++)
+	{
+		cout << nodes[i] << " ";
+	}
+
+	return nodes;
 }
