@@ -14,6 +14,8 @@ matrix readMatrix(string, int);
 vector<int> findSource(matrix&);
 vector<int> findDrain(matrix&);
 void extendMatrix(matrix&, vector<int>&, vector<int>&);
+bool dfs(matrix&, vector<int>, int);
+bool findCycle(matrix&);
 
 
 void main() 
@@ -21,6 +23,13 @@ void main()
 	vector<int> testWeights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
 	matrix matrix = readMatrix("test.txt", testWeights.size());
 	printMatrix(matrix);
+
+	if (findCycle(matrix)) 
+	{
+		cout << "The original matrix contains a cycle" << endl;
+		cout << "The task cannot be solved for a matrix with a cycle" << endl;
+		return;
+	}
 
 	vector<int> sourceNodes = findSource(matrix);
 	vector<int> drainNodes = findDrain(matrix);
@@ -178,4 +187,39 @@ void extendMatrix(matrix& matrix, vector<int>& rows, vector<int>& columns)
 			matrix[columns[i] + 1][matrix[0].size() - 1] = 1;
 		}
 	}
+}
+
+// Functions for finding cycles in matrixs
+bool dfs(matrix& matrix, vector<int> visited, int index) 
+{
+	for (int i = 0; i < matrix.size(); i++)
+	{
+		if (matrix[index][i] == 1 && visited[i] != 2)
+		{
+			if (visited[i] == 1)
+			{
+				return true;
+			}
+
+			visited[i] = 1;
+			if (dfs(matrix, visited, i))
+			{
+				return true;
+			}
+			visited[i] = 2;
+		}
+	}
+
+	return false;
+}
+
+bool findCycle(matrix& matrix) 
+{
+	vector<int> visited;
+	for (int i = 0; i < matrix.size(); i++)
+	{
+		visited.push_back(0);
+	}
+
+	return dfs(matrix, visited, 0);
 }
