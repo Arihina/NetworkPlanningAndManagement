@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include<tuple>
+#include <map>
 #include <algorithm>
 #include <fstream>
 #include <string>
@@ -24,7 +24,8 @@ vector<int> changeOrderNodes(matrix&, vector<int>&);
 matrix findNextWorks(matrix&);
 vector<int> findEarlyStart(matrix&, vector<int>&);
 vector<int> findEarlyEnd(matrix&, vector<int>&);
-
+vector<int> findCriticalPathLength(vector<int>&, vector<int>&, vector<int>&);
+vector<int> findTimeReserve(vector<int>&, int);
 
 void main() 
 {
@@ -45,7 +46,7 @@ void main()
 	extendMatrix(matrix, sourceNodes, drainNodes);
 
 	vector<int> order = changeOrderNodes(matrix, weights);
-	cout << "The order of execution of works " << endl;
+	cout << "Order of execution of works " << endl;
 	printVector(order);
 
 	cout << "Duration of work" << endl;
@@ -62,7 +63,18 @@ void main()
 	vector<int> endWorks = findEarlyEnd(matrix, weights);
 	cout << "Early start of works " << endl;
 	printVector(endWorks);
-	// printMatrix(matrix);
+
+	vector<int> criticalPaths = findCriticalPathLength(weights, startWorks, endWorks);
+	cout << "Critical Path Length" << endl;
+	printVector(criticalPaths);
+
+	int maxLen = *max_element(criticalPaths.begin(), criticalPaths.end());
+
+	vector<int> reserve = findTimeReserve(criticalPaths, maxLen);
+	cout << "Time reserve " << endl;
+	printVector(reserve);
+
+	cout << "Max length of the critical path = " << maxLen << endl;
 }
 
 
@@ -374,4 +386,29 @@ vector<int> findEarlyEnd(matrix& matrix, vector<int>& weights)
 	}
 
 	return endWorks;
+}
+
+// Function for finding the length of the critical path
+vector<int> findCriticalPathLength(vector<int>& weights, vector<int>& startWorks, vector<int>& endWorks)
+{
+	vector<int> result;
+	for (int i = 0; i < weights.size(); i++)
+	{
+		result.push_back(weights[i] + startWorks[i] + endWorks[i]);
+	}
+
+	return result;
+}
+
+// Function for finding the time reserve
+vector<int> findTimeReserve(vector<int>& criticalPaths, int maxPath)
+{
+	vector<int> result;
+
+	for (int i = 0; i < criticalPaths.size(); i++)
+	{
+		result.push_back(maxPath - criticalPaths[i]);
+	}
+
+	return result;
 }
