@@ -75,6 +75,7 @@ void main()
 	printVector(reserve);
 
 	cout << "Max length of the critical path = " << maxLen << endl;
+	cin >> answer;
 }
 
 
