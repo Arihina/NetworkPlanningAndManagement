@@ -26,12 +26,40 @@ vector<int> findEarlyStart(matrix&, vector<int>&);
 vector<int> findEarlyEnd(matrix&, vector<int>&);
 vector<int> findCriticalPathLength(vector<int>&, vector<int>&, vector<int>&);
 vector<int> findTimeReserve(vector<int>&, int);
+vector<int> readVector(string, int);
 
 void main() 
 {
-	vector<int> weights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
+	int defaultSize = 9; // default size of vector from file
+	string defaultVector = "exampleVector.txt", defaultMatrix = "exampleMatrix.txt";
+
+	cout << "Use default input files? y/n " << endl;
+	char answer;
+	cin >> answer;
+
+	if (answer != 'y')
+	{
+		if (answer != 'n')
+		{
+			cout << "Invalid character. The default settings are set." << endl;
+		}
+		else
+		{
+			cout << "Enter a size of input vector: ";
+			cin >> defaultSize;
+
+			cout << "Enter file name for input matrix: ";
+			cin >> defaultMatrix;
+
+			cout << "Enter file name for input vector: ";
+			cin >> defaultVector;
+		}
+	}
+	cout << endl;
+
+	vector<int> weights = readVector(defaultVector, defaultSize);
 	matrix times;
-	matrix matrix = readMatrix("test.txt", weights.size());
+	matrix matrix = readMatrix(defaultMatrix, defaultSize);
 
 	if (findCycle(matrix)) 
 	{
@@ -127,13 +155,14 @@ void printVector(matrix& matrix)
 	cout << endl;
 }
 
-// Function for read matrix from txt file
+// Function for read matrix from .txt file
 matrix readMatrix(string fileName, int size) {
 	if (fileName.substr(fileName.find_last_of(".") + 1) != "txt")
 	{
 		cout << "Error. You cannot open a file with a non-txt extension";
 		exit(1);
 	}
+
 	ifstream fin(fileName);
 	matrix matrix;
 	int num;
@@ -152,6 +181,28 @@ matrix readMatrix(string fileName, int size) {
 	fin.close();
 
 	return matrix;
+}
+
+// Function for read vector from .txt file
+vector<int> readVector(string fileName, int size)
+{
+	if (fileName.substr(fileName.find_last_of(".") + 1) != "txt")
+	{
+		cout << "Error. You cannot open a file with a non-txt extension";
+		exit(1);
+	}
+	
+	ifstream fin(fileName);
+	vector<int> vector;
+	int num;
+
+	for (int i = 0; i < size; i++)
+	{
+		fin >> num;
+		vector.push_back(num);
+	}
+
+	return vector;
 }
 
 // Function for searching for source nodes
