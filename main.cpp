@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include<tuple>
 #include <algorithm>
 #include <fstream>
 #include <string>
@@ -17,12 +18,15 @@ void extendMatrix(matrix&, vector<int>&, vector<int>&);
 bool dfs(matrix&, vector<int>, int);
 bool findCycle(matrix&);
 void topologicalSorting(matrix&, int, vector<int>&, vector<int>&);
-void changeOrderNodes(matrix&, vector<int>&);
+void printVector(vector<int>&);
+vector<int> changeOrderNodes(matrix&, vector<int>&);
+matrix findNextWorks(matrix&);
 
 
 void main() 
 {
 	vector<int> testWeights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
+	matrix times;
 	matrix matrix = readMatrix("test.txt", testWeights.size());
 	printMatrix(matrix);
 
@@ -41,10 +45,17 @@ void main()
 	printMatrix(matrix);
 	
 
-	changeOrderNodes(matrix, testWeights);
-	cout << endl;
-	printMatrix(matrix);
+	vector<int> order = changeOrderNodes(matrix, testWeights);
+	cout << "The order of execution of works " << endl;
+	printVector(order);
 
+	cout << "Duration of work" << endl;
+	printVector(testWeights);
+	
+	times = findNextWorks(matrix);
+	printMatrix(times);
+
+	printMatrix(matrix);
 }
 
 
@@ -73,6 +84,15 @@ void printMatrix(matrix& matrix) {
 		}
 		cout << endl;
 	}
+}
+
+void printVector(vector<int>& vector)
+{
+	for (int i = 0; i < vector.size(); i++)
+	{
+		cout << vector[i] << " ";
+	}
+	cout << endl;
 }
 
 // Function for read matrix from txt file
@@ -246,21 +266,13 @@ void topologicalSorting(matrix& matrix, int node, vector<int>& visited, vector<i
 	resultOrder.push_back(node);
 }
 
-void changeOrderNodes(matrix& matrix, vector<int>& weights)
+vector<int> changeOrderNodes(matrix& matrix, vector<int>& weights)
 {
 	vector<int> visited(matrix.size(), 0);
 	vector<int> resultOrder;
 	topologicalSorting(matrix, 0, visited, resultOrder);
 	
 	reverse(resultOrder.begin(), resultOrder.end());
-
-	/*
-	cout << "New order ";
-	for (int i = 0; i < resultOrder.size(); i++)
-	{
-		cout << i << " ";
-	}
-	*/
 
 	weights.insert(weights.begin(), 0);
 	weights.push_back(0);
@@ -281,4 +293,27 @@ void changeOrderNodes(matrix& matrix, vector<int>& weights)
 
 	matrix = copyMatrix;
 	weights = copyWeights;
+
+	return resultOrder;
+}
+
+// Function for find next work from node
+matrix findNextWorks(matrix& args) 
+{
+	matrix result;
+
+	for (int i = 0; i < args.size(); i++)
+	{
+		vector<int> row;
+		for (int j = 0; j < args[i].size(); j++)
+		{
+			if (args[i][j] > 0) 
+			{
+				row.push_back(j);
+			}
+		}
+		result.push_back(row);
+	}
+
+	return result;
 }
