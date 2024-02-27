@@ -19,16 +19,18 @@ bool dfs(matrix&, vector<int>, int);
 bool findCycle(matrix&);
 void topologicalSorting(matrix&, int, vector<int>&, vector<int>&);
 void printVector(vector<int>&);
+void printVector(matrix&);
 vector<int> changeOrderNodes(matrix&, vector<int>&);
 matrix findNextWorks(matrix&);
+vector<int> findEarlyStart(matrix&, vector<int>&);
+vector<int> findEarlyEnd(matrix&, vector<int>&);
 
 
 void main() 
 {
-	vector<int> testWeights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
+	vector<int> weights = { 7, 6, 9, 3, 4, 8, 5, 2, 5 };
 	matrix times;
-	matrix matrix = readMatrix("test.txt", testWeights.size());
-	printMatrix(matrix);
+	matrix matrix = readMatrix("test.txt", weights.size());
 
 	if (findCycle(matrix)) 
 	{
@@ -41,21 +43,26 @@ void main()
 	vector<int> drainNodes = findDrain(matrix);
 
 	extendMatrix(matrix, sourceNodes, drainNodes);
-	cout << endl;
-	printMatrix(matrix);
-	
 
-	vector<int> order = changeOrderNodes(matrix, testWeights);
+	vector<int> order = changeOrderNodes(matrix, weights);
 	cout << "The order of execution of works " << endl;
 	printVector(order);
 
 	cout << "Duration of work" << endl;
-	printVector(testWeights);
+	printVector(weights);
 	
 	times = findNextWorks(matrix);
-	printMatrix(times);
+	cout << "Related nodes" << endl;
+	printVector(times);
 
-	printMatrix(matrix);
+	vector<int> startWorks = findEarlyStart(matrix, weights);
+	cout << "Early start of works " << endl;
+	printVector(startWorks);
+
+	vector<int> endWorks = findEarlyEnd(matrix, weights);
+	cout << "Early start of works " << endl;
+	printVector(endWorks);
+	// printMatrix(matrix);
 }
 
 
@@ -91,6 +98,19 @@ void printVector(vector<int>& vector)
 	for (int i = 0; i < vector.size(); i++)
 	{
 		cout << vector[i] << " ";
+	}
+	cout << endl;
+}
+
+void printVector(matrix& matrix) 
+{
+	for (int i = 0; i < matrix.size(); i++)
+	{
+		for (int j = 0; j < matrix[i].size(); j++)
+		{
+			cout << matrix[i][j] << " ";
+		}
+		cout << " ";
 	}
 	cout << endl;
 }
@@ -297,7 +317,7 @@ vector<int> changeOrderNodes(matrix& matrix, vector<int>& weights)
 	return resultOrder;
 }
 
-// Function for find next work from node
+// Function for finding next work from node
 matrix findNextWorks(matrix& args) 
 {
 	matrix result;
@@ -316,4 +336,42 @@ matrix findNextWorks(matrix& args)
 	}
 
 	return result;
+}
+
+// Function for finding early start of works
+vector<int> findEarlyStart(matrix& matrix, vector<int>& weights) 
+{
+	vector<int> startWorks(weights.size(), 0);
+
+	for (int i = 0; i < matrix.size(); i++)
+	{
+		for (int j = 0; j < matrix[i].size(); j++)
+		{
+			if (matrix[j][i] == 1)
+			{
+				startWorks[i] = max(startWorks[i], startWorks[j] + weights[j]);
+			}
+		}
+	}
+
+	return startWorks;
+}
+
+// Function for finding early end of works
+vector<int> findEarlyEnd(matrix& matrix, vector<int>& weights)
+{
+	vector<int> endWorks(weights.size(), 0);
+
+	for (int i = matrix.size() - 1; i >= 0; i--)
+	{
+		for (int j = 0; j < matrix[i].size(); j++)
+		{
+			if (matrix[i][j] == 1)
+			{
+				endWorks[i] = max(endWorks[i], endWorks[j] + weights[j]);
+			}
+		}
+	}
+
+	return endWorks;
 }
