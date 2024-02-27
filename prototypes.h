@@ -29,3 +29,4 @@ vector<int> findEarlyEnd(matrix&, vector<int>&);
 vector<int> findCriticalPathLength(vector<int>&, vector<int>&, vector<int>&);
 vector<int> findTimeReserve(vector<int>&, int);
 vector<int> readVector(string, int);
+vector<int> fillRandomVector(int);

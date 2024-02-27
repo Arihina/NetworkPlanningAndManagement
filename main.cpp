@@ -94,6 +94,18 @@ matrix fillRandomMatrix(int size) {
 	return matrix;
 }
 
+vector<int> fillRandomVector(int size)
+{
+	vector<int> result;
+
+	for (int i = 0; i < size; i++)
+	{
+		result.push_back(rand() % 10);
+	}
+
+	return result;
+}
+
 void printMatrix(matrix& matrix) {
 	for (int i = 0; i < matrix.size(); i++)
 	{
