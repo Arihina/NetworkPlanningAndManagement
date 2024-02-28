@@ -187,6 +187,8 @@ vector<int> readVector(string fileName, int size)
 		vector.push_back(num);
 	}
 
+	fin.close();
+
 	return vector;
 }
 
